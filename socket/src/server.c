@@ -1,6 +1,5 @@
 #include "server.h"
 
-
 #define SERVER_PORT 8080
 #define SERVER_IP_1 "127.0.0.1"
 
@@ -18,6 +17,7 @@ int server_init(void)
 		perror("server sockfd create failed\n");
 		exit(-1);
 	}
+	
 
 	struct sockaddr_in server_addr;
 	bzero(&server_addr, sizeof(server_addr));
@@ -33,8 +33,50 @@ int server_init(void)
 		exit(-1);
 	}
 
-	return 0;
+	ret = listen(sockfd, 10);
+	if (0 == ret)
+	{
+		perror("server listen failed\n");
+		close(sockfd);
+		exit(-1);
+	}
+
+	return sockfd;
 		
+}
+
+void ServerConnectClient(int Sockfd)
+{
+	struct sockaddr_in client_addr;
+	socket_t cliadrr_len = sizeof(client_addr);
+	char cli_ip[INET_ADDRSTRLEN] = "";	
+
+	while (1)
+	{
+		int connfd = connect(Sockfd, (struct sockaddr*)&client_addr, &cliadrr_len);
+		if (0 > connfd)
+		{
+			perror("server connect failed\n");
+			continue;
+		}
+		inet_pton(AF_INET, &client_addr.sin_addr, cli_ip, INET_ADDRSTRLEN);
+		char recv_buf[512] = "";
+		/*recv先检查发送缓冲区是否为空，再检查接收缓冲区是否为空*/
+		while (recv(connfd, recv_buf, sizeof(recv_buf), 0) > 0)
+		{
+			printf("recv data(%s):%s\n", cli_ip, recv_buf);
+		}
+		close(connfd);
+		printf("client(%s) closed!\n", cli_ip);
+	}
+	close(Sockfd);
+}	
+
+
+void main(void)
+{
+	int sockfd = server_init();
+	ServerConnectClient(sockfd);
 }
 
 
