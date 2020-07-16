@@ -41,8 +41,13 @@ void ClientSendMsg(int clifd)
         send(clifd, send_buf, strlen(send_buf), 0);
     }
     close(clifd);
+    
 }
 
 
 
-
+int main(void)
+{
+    ClientInit();
+    return 0;
+}

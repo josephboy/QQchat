@@ -48,7 +48,7 @@ int server_init(void)
 void ServerConnectClient(int Sockfd)
 {
 	struct sockaddr_in client_addr;
-	socket_t cliadrr_len = sizeof(client_addr);
+	socklen_t cliadrr_len = sizeof(client_addr);
 	char cli_ip[INET_ADDRSTRLEN] = "";	
 
 	while (1)
@@ -59,7 +59,7 @@ void ServerConnectClient(int Sockfd)
 			perror("server connect failed\n");
 			continue;
 		}
-		inet_pton(AF_INET, &client_addr.sin_addr, cli_ip, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, &client_addr.sin_addr, cli_ip, INET_ADDRSTRLEN);
 		char recv_buf[512] = "";
 		/*recv先检查发送缓冲区是否为空，再检查接收缓冲区是否为空*/
 		while (recv(connfd, recv_buf, sizeof(recv_buf), 0) > 0)
