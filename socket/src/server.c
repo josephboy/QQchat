@@ -53,7 +53,7 @@ void ServerConnectClient(int Sockfd)
 
 	while (1)
 	{
-		int connfd = connect(Sockfd, (struct sockaddr*)&client_addr, &cliadrr_len);
+		int connfd = accept(Sockfd, (struct sockaddr*)&client_addr, &cliadrr_len);
 		if (0 > connfd)
 		{
 			perror("server connect failed\n");

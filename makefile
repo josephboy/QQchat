@@ -13,6 +13,7 @@ target = server client
 ifndef TEST
 
 
+all : $(target)
 
 server : server.o
 	$(CC)  $(OUT)/server.o -o server
@@ -24,7 +25,6 @@ client : client.o
 client.o : $(SRC)/client.c $(INC)/client.h
 	$(CC) -c $(SRC)/client.c -o $(OUT)/client.o -I $(INC)
 
-all : $(target)
 
 clean : 
 	rm -rf $(OUT)/*.o server client a.out
