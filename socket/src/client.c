@@ -48,6 +48,7 @@ void ClientSendMsg(int clifd)
 
 int main(void)
 {
-    ClientInit();
+    int clifd = ClientInit();
+    ClientSendMsg(clifd);
     return 0;
 }
