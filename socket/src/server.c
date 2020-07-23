@@ -23,7 +23,8 @@ int server_init(void)
 	bzero(&server_addr, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(port);
-	inet_pton(AF_INET, server_ip, &server_addr.sin_addr);
+	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	//inet_pton(AF_INET, server_ip, &server_addr.sin_addr);
 
 	int ret = bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
 	if (0 != ret)
@@ -34,7 +35,7 @@ int server_init(void)
 	}
 
 	ret = listen(sockfd, 10);
-	if (0 == ret)
+	if (0 != ret)
 	{
 		perror("server listen failed\n");
 		close(sockfd);

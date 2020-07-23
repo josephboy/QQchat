@@ -6,7 +6,7 @@
 
 int ClientInit(void)
 {
-    unsigned short port = 8080;
+    unsigned short port = PORT;
     char *server_ip = SERVER_IP;
 
 
@@ -22,6 +22,7 @@ int ClientInit(void)
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
     inet_pton(AF_INET, server_ip, &server_addr.sin_addr);
+
     int ret = connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
     if (0 != ret)
     {
