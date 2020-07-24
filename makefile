@@ -16,14 +16,14 @@ ifndef TEST
 all : $(target)
 
 server : server.o
-	$(CC)  $(OUT)/server.o -o server
+	$(CC)  $(OUT)/server.o -o server -lpthread
 server.o : $(SRC)/server.c $(INC)/server.h
-	$(CC) -c $(SRC)/server.c -o $(OUT)/server.o -I $(INC)
+	$(CC) -c $(SRC)/server.c -o $(OUT)/server.o -I $(INC) -lpthread
 
 client : client.o
-	$(CC)  $(OUT)/client.o -o client 
+	$(CC)  $(OUT)/client.o -o client  -lpthread
 client.o : $(SRC)/client.c $(INC)/client.h
-	$(CC) -c $(SRC)/client.c -o $(OUT)/client.o -I $(INC)
+	$(CC) -c $(SRC)/client.c -o $(OUT)/client.o -I $(INC) -lpthread
 
 
 clean : 
