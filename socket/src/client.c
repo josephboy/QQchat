@@ -4,7 +4,12 @@
 #define SERVER_IP "127.0.0.1"
 #define PORT 8080
 
-
+/**
+ * @Function : Init client param
+ * @Description : none
+ * @Input : none
+ * @Return : none
+ */
 int ClientInit(void)
 {
     unsigned short port = PORT;
@@ -33,6 +38,13 @@ int ClientInit(void)
     return sockfd;
 }
 
+
+/**
+ * @Function : send client message to server
+ * @Description : none
+ * @Input : socket fd
+ * @Return : none
+ */
 void *ClientSendMsg(void *clifd)
 {
     int fd = *(int *)clifd;
@@ -46,7 +58,12 @@ void *ClientSendMsg(void *clifd)
     
 }
 
-
+/**
+ * @Function : Receive messages from the server
+ * @Description : none
+ * @Input : socket fd
+ * @Return : none
+ */
 void *ClientGetMsg(void *clifd)
 {
     int fd = *(int *)clifd;
@@ -69,6 +86,6 @@ int main(void)
     pthread_create(&p_recv, NULL, ClientGetMsg, &clifd);
     pthread_create(&p_send, NULL, ClientSendMsg, &clifd);
 
-
+    while (1);
     return 0;
 }
