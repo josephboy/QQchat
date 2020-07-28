@@ -6,7 +6,7 @@
 #define DB "QQ"                     /*database name*/
 
 MYSQL sql;  /* QQ database fd */
-
+MYSQL *rsql; /* connect fd */
 /**
  * @Function : database init
  * @Description : none
@@ -20,8 +20,8 @@ void DatabaseInit(void)
         printf("mysql_init error:%s\n", mysql_error(&sql));
         exit(-1);
     }
-    
-    if (NULL == mysql_real_connect(&sql, HOST, USER, PASSWORD, DB, 0, NULL, 0))
+    rsql = mysql_real_connect(&sql, HOST, USER, PASSWORD, DB, 0, NULL, 0);
+    if (NULL == rsql)
     {
         printf("mysql_real_connect error:%s!\n", mysql_error(&sql));
         exit(-1);
@@ -32,9 +32,16 @@ void DatabaseInit(void)
 }
 
 
-void DatabaseClose(MYSQL *sql)
+void DatabaseClose()
 {
-    mysql_close(sql);
+    mysql_close(rsql);
+}
+
+void InsertData(void)
+{
+    char *inser_str = "insert into db_user (id, name, password) values (1, 'joseph', '123')";
+    
+    //int ret = mysql_real_query(&sql, inser_str, sizeof(quad_t))
 }
 
 void InquireData(void)
@@ -44,40 +51,42 @@ void InquireData(void)
     char *query_str = "select * from db_user";
 
     /* inquire the table data */
-    int ret = mysql_real_query(&sql, query_str, sizeof(query_str));
+    int ret = mysql_real_query(rsql, query_str, strlen(query_str));
     if (0 != ret)
     {
-        printf("mysql_real_query error:%s\n", mysql_error(&sql));
+        printf("%s:mysql_real_query error:%s\n", __func__, mysql_error(rsql));
         exit(-1);
     }
 
     /* get table result to res */
-    res = mysql_store_result(&sql);
-    if (NULL = res)
+    res = mysql_store_result(rsql);
+    if (NULL == res)
     {
-        printf("mysql_store_result error:%s\n", mysql_error(&sql));
+        printf("mysql_store_result error:%s\n", mysql_error(rsql));
         exit(-1);
     }
     
     row = mysql_num_rows(res);
     printf("The total rows is :%d\n", row);
 
-    int filds = mysql_num_fields(res);
+    int fields = mysql_num_fields(res);
     printf("The total fields is: %d\n", fields);
 
     while ((row = mysql_fetch_row(res))) 
     {
-        for (i = 0; i < fields; i++) 
+        for (int i = 0; i < fields; i++) 
         {
             printf("%s\t", row[i]);
         }
         printf("\n");
     }
-
+    
+    mysql_free_result(res);
 }
 
 int main(void)
 {
     DatabaseInit();
+    InquireData();
     DatabaseClose();
 }

@@ -7,6 +7,6 @@
 #include <string.h>
 
 
-extern void DatabaseClose(MYSQL *sql);
+extern void DatabaseClose();
 
 #endif
