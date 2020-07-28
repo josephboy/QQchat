@@ -4,9 +4,12 @@
 #define USER  "root"             /*user name*/
 #define PASSWORD  "123"           /*user password*/
 #define DB "QQ"                     /*database name*/
+#define TABLE_NAME "tb_user"        /* table name */ 
 
 MYSQL sql;  /* QQ database fd */
 MYSQL *rsql; /* connect fd */
+
+
 /**
  * @Function : database init
  * @Description : none
@@ -37,18 +40,77 @@ void DatabaseClose()
     mysql_close(rsql);
 }
 
-void InsertData(void)
+
+/**
+ * @Function : Add infomation to database
+ * @Description : none
+ * @Input : user name , user password
+ * @Return : none
+ */
+void InsertDatabaseData(char *name, char *password)
 {
-    char *inser_str = "insert into db_user (id, name, password) values (1, 'joseph', '123')";
-    
-    //int ret = mysql_real_query(&sql, inser_str, sizeof(quad_t))
+    char inser_str[100];
+
+    sprintf(inser_str, "insert into db_user (id, name, password) values ('%s', '%s')", name, password);
+    int ret = mysql_real_query(&sql, inser_str, strlen(inser_str));
+    if (0 != ret)
+    {
+        printf("%s:mysql_real_query error:%s\n", __func__, mysql_error(rsql));
+        exit(-1);
+    }
 }
 
-void InquireData(void)
+/**
+ * @Function : Delete database infomation
+ * @Description : none
+ * @Input : user name , user password
+ * @Return : none
+ */
+void DeleteDatabaseData(char *name, char *password)
+{
+    char inser_str[100];
+
+    sprintf(inser_str, "delete from db_user (id, name, password) values ('%s', '%s')", name, password);
+    int ret = mysql_real_query(&sql, inser_str, strlen(inser_str));
+    if (0 != ret)
+    {
+        printf("%s:mysql_real_query error:%s\n", __func__, mysql_error(rsql));
+        exit(-1);
+    }
+}
+
+
+/**
+ * @Function : Modify database infomation
+ * @Description : none
+ * @Input : user name , user password
+ * @Return : none
+ */
+void AlterDatabaseData(char *name, char *password)
+{
+    char inser_str[100];
+
+    sprintf(inser_str, "update db_user set password = '%s' where name = '%s'", password, name);
+    int ret = mysql_real_query(&sql, inser_str, strlen(inser_str));
+    if (0 != ret)
+    {
+        printf("%s:mysql_real_query error:%s\n", __func__, mysql_error(rsql));
+        exit(-1);
+    }
+}
+
+
+/**
+ * @Function : Inquire infomation on database
+ * @Description : none
+ * @Input : none
+ * @Return : none
+ */
+void InquireDatabaseData(void)
 {
     MYSQL_RES *res = NULL;
     MYSQL_ROW row;
-    char *query_str = "select * from db_user";
+    char *query_str = "select * from tb_user";
 
     /* inquire the table data */
     int ret = mysql_real_query(rsql, query_str, strlen(query_str));
@@ -87,6 +149,6 @@ void InquireData(void)
 int main(void)
 {
     DatabaseInit();
-    InquireData();
+    InquireDatabaseData();
     DatabaseClose();
 }
