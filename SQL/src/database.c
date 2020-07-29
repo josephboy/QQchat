@@ -51,7 +51,7 @@ void InsertDatabaseData(char *name, char *password)
 {
     char inser_str[100];
 
-    sprintf(inser_str, "insert into db_user (id, name, password) values ('%s', '%s')", name, password);
+    sprintf(inser_str, "insert into tb_user (name, password) values ('%s', '%s')", name, password);
     int ret = mysql_real_query(&sql, inser_str, strlen(inser_str));
     if (0 != ret)
     {
@@ -60,17 +60,18 @@ void InsertDatabaseData(char *name, char *password)
     }
 }
 
+
 /**
  * @Function : Delete database infomation
  * @Description : none
  * @Input : user name , user password
  * @Return : none
  */
-void DeleteDatabaseData(char *name, char *password)
+void DeleteDatabaseData(char *name)
 {
     char inser_str[100];
 
-    sprintf(inser_str, "delete from db_user (id, name, password) values ('%s', '%s')", name, password);
+    sprintf(inser_str, "delete from tb_user where name = '%s'", name);
     int ret = mysql_real_query(&sql, inser_str, strlen(inser_str));
     if (0 != ret)
     {
@@ -90,7 +91,7 @@ void AlterDatabaseData(char *name, char *password)
 {
     char inser_str[100];
 
-    sprintf(inser_str, "update db_user set password = '%s' where name = '%s'", password, name);
+    sprintf(inser_str, "update tb_user set password = '%s' where name = '%s'", password, name);
     int ret = mysql_real_query(&sql, inser_str, strlen(inser_str));
     if (0 != ret)
     {
@@ -106,18 +107,25 @@ void AlterDatabaseData(char *name, char *password)
  * @Input : none
  * @Return : none
  */
-void InquireDatabaseData(void)
+int InquireDatabaseData(char *table, char *name, char *result)
 {
+    if (NULL == table || NULL == name)
+    {
+        return -1;
+    }
+
     MYSQL_RES *res = NULL;
     MYSQL_ROW row;
-    char *query_str = "select * from tb_user";
+    char query_str[100];
+
+    sprintf(query_str, "select password from %s where name='%s'",table, name);
 
     /* inquire the table data */
     int ret = mysql_real_query(rsql, query_str, strlen(query_str));
     if (0 != ret)
     {
         printf("%s:mysql_real_query error:%s\n", __func__, mysql_error(rsql));
-        exit(-1);
+        return -1;
     }
 
     /* get table result to res */
@@ -125,30 +133,59 @@ void InquireDatabaseData(void)
     if (NULL == res)
     {
         printf("mysql_store_result error:%s\n", mysql_error(rsql));
-        exit(-1);
+        return -1;
     }
     
-    row = mysql_num_rows(res);
-    printf("The total rows is :%d\n", row);
+    /* get the number of rows */
+    int rows = mysql_num_rows(res);
+    printf("The total rows is :%d\n", rows);
 
+    /*  get the number of colunms */
     int fields = mysql_num_fields(res);
     printf("The total fields is: %d\n", fields);
 
-    while ((row = mysql_fetch_row(res))) 
+    
+    row = mysql_fetch_row(res);
+    
+    /*while ((row = mysql_fetch_row(res))) 
     {
         for (int i = 0; i < fields; i++) 
         {
-            printf("%s\t", row[i]);
+            printf("i:%d, %s\t", i, row[i]);
         }
         printf("\n");
-    }
+    }*/
     
+    strcpy(result, row[0]);
+    //printf("%s,%s\n", result, row[0]);
+
     mysql_free_result(res);
+
+    return 0;
 }
 
+int GetUserPassword(char *name, char *password)
+{
+    if (NULL == name)
+    {
+        return -1;
+    }
+    //printf("%s:name:%s, password:%s\n",__func__, name, password);
+    InquireDatabaseData(TABLE_NAME, name, password);
+    //printf("password is :%s\n", password);
+
+    return 0;
+}
+
+#if 0
 int main(void)
 {
+    char a[20];
     DatabaseInit();
-    InquireDatabaseData();
+    //InquireDatabaseData("test");
+    GetUserPassword("test", a);
     DatabaseClose();
 }
+#else
+
+#endif

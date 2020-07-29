@@ -3,7 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/usr/include/mysql",
+                "/mnt/c/Project/WSL/QQ/SQL",
+                "${workspaceFolder}/SQL/inc"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

@@ -8,5 +8,7 @@
 
 
 extern void DatabaseClose();
+extern int GetUserPassword(char *name, char *password);
+extern void DatabaseInit(void);
 
 #endif

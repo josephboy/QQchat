@@ -5,12 +5,7 @@
 
 int sockfd; //·þÎñÆ÷Ì×½Ó×Ö
 
-/**
- * @Function : Init server param
- * @Description : none
- * @Input : none
- * @Return : none
- */
+
 int server_init(void)
 {
 	unsigned short port = SERVER_PORT;
@@ -22,6 +17,7 @@ int server_init(void)
 		perror("server sockfd create failed\n");
 		exit(-1);
 	}
+	
 
 	struct sockaddr_in server_addr;
 	bzero(&server_addr, sizeof(server_addr));
@@ -46,21 +42,15 @@ int server_init(void)
 		exit(-1);
 	}
 
-	return sockfd;		
+	return sockfd;
+		
 }
 
-
-/**
- * @Function : Wait for the client to connect
- * @Description : none
- * @Input : the server socket fd
- * @Return : none
- */
 void ServerConnectClient(int Sockfd)
 {
 	struct sockaddr_in client_addr;
 	socklen_t cliadrr_len = sizeof(client_addr);
-	char cli_ip[INET_ADDRSTRLEN] = "";	
+	char cli_ip[INET_ADDRSTRLEN] = "";
 
 	while (1)
 	{
