@@ -144,6 +144,11 @@ int InquireDatabaseData(char *table, char *name, char *result)
     int fields = mysql_num_fields(res);
     printf("The total fields is: %d\n", fields);
 
+    if ((rows == 0) || (fields == 0))
+    {
+        mysql_free_result(res);
+        return -1;
+    }
     
     row = mysql_fetch_row(res);
     
@@ -171,10 +176,10 @@ int GetUserPassword(char *name, char *password)
         return -1;
     }
     //printf("%s:name:%s, password:%s\n",__func__, name, password);
-    InquireDatabaseData(TABLE_NAME, name, password);
+    int ret = InquireDatabaseData(TABLE_NAME, name, password);
     //printf("password is :%s\n", password);
-
-    return 0;
+    //printf("ret is :%d\n", ret);
+    return ret;
 }
 
 #if 0
@@ -183,7 +188,7 @@ int main(void)
     char a[20];
     DatabaseInit();
     //InquireDatabaseData("test");
-    GetUserPassword("test", a);
+    GetUserPassword("tst", a);
     DatabaseClose();
 }
 #else

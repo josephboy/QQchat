@@ -7,10 +7,10 @@ CFLAGS = -W -Wall -pedantic
 SRC = ./socket/src
 INC = ./socket/inc
 OUT = ./out
-TEST =
+DEBUG =
 target = server client
 
-ifndef TEST
+ifndef DEBUG
 
 
 all : $(target)
