@@ -7,5 +7,5 @@
 
 #define NAME_MAX_LEN 20
 #define PASSWORD_MAX_LEN 10
-
+#define MAX_TIMES 3
 #endif

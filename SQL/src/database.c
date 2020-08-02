@@ -10,6 +10,12 @@ MYSQL sql;  /* QQ database fd */
 MYSQL *rsql; /* connect fd */
 
 
+
+static void InsertDatabaseData(char *name, char *password);
+static void DeleteDatabaseData(char *name);
+static void AlterDatabaseData(char *name, char *password);
+static int InquireDatabaseData(char *table, char *target, char *condition, char *result);
+
 /**
  * @Function : database init
  * @Description : none
@@ -45,9 +51,9 @@ void DatabaseClose()
  * @Function : Add infomation to database
  * @Description : none
  * @Input : user name , user password
- * @Return : none
+ * @Return : 0 success  -1 failed
  */
-void InsertDatabaseData(char *name, char *password)
+static int InsertDatabaseData(char *name, char *password)
 {
     char inser_str[100];
 
@@ -56,8 +62,10 @@ void InsertDatabaseData(char *name, char *password)
     if (0 != ret)
     {
         printf("%s:mysql_real_query error:%s\n", __func__, mysql_error(rsql));
-        exit(-1);
+        return -1;
     }
+
+    return 0;
 }
 
 
@@ -67,7 +75,7 @@ void InsertDatabaseData(char *name, char *password)
  * @Input : user name , user password
  * @Return : none
  */
-void DeleteDatabaseData(char *name)
+static void DeleteDatabaseData(char *name)
 {
     char inser_str[100];
 
@@ -87,7 +95,7 @@ void DeleteDatabaseData(char *name)
  * @Input : user name , user password
  * @Return : none
  */
-void AlterDatabaseData(char *name, char *password)
+static void AlterDatabaseData(char *name, char *password)
 {
     char inser_str[100];
 
@@ -105,11 +113,11 @@ void AlterDatabaseData(char *name, char *password)
  * @Function : Inquire infomation on database
  * @Description : none
  * @Input : none
- * @Return : none
+ * @Return : 0 success  -1 failed
  */
-int InquireDatabaseData(char *table, char *name, char *result)
+static int InquireDatabaseData(char *table, char *target, char *condition, char *result)
 {
-    if (NULL == table || NULL == name)
+    if (NULL == table || NULL == target || NULL == condition || NULL == result)
     {
         return -1;
     }
@@ -118,7 +126,7 @@ int InquireDatabaseData(char *table, char *name, char *result)
     MYSQL_ROW row;
     char query_str[100];
 
-    sprintf(query_str, "select password from %s where name='%s'",table, name);
+    sprintf(query_str, "select %s from %s where %s",target, table, condition);
 
     /* inquire the table data */
     int ret = mysql_real_query(rsql, query_str, strlen(query_str));
@@ -147,7 +155,8 @@ int InquireDatabaseData(char *table, char *name, char *result)
     if ((rows == 0) || (fields == 0))
     {
         mysql_free_result(res);
-        return -1;
+        result = NULL;
+        return 0;
     }
     
     row = mysql_fetch_row(res);
@@ -169,20 +178,111 @@ int InquireDatabaseData(char *table, char *name, char *result)
     return 0;
 }
 
-int GetUserPassword(char *name, char *password)
+/**
+ * @Function : Get user password on database
+ * @Description : none
+ * @Input : none
+ * @Return : 0 success  -1 failed
+ */
+int GetUserPassword(char *name, char *reslut)
 {
-    if (NULL == name)
+    if (NULL == name || NULL == reslut)
     {
         return -1;
     }
-    //printf("%s:name:%s, password:%s\n",__func__, name, password);
-    int ret = InquireDatabaseData(TABLE_NAME, name, password);
-    //printf("password is :%s\n", password);
-    //printf("ret is :%d\n", ret);
-    return ret;
+
+    char target[TARGET_MAX_LEN] = {0};
+    char condition[CONDITION_MAX_LEN] = {0};
+
+    sprintf(target, "password");
+    sprintf(condition, "name = '%s'", name);
+    if (0 != InquireDatabaseData(TABLE_NAME, target, condition, reslut))
+    {
+        printf("%s: Inquire error, tartget = %s, condition = %s\n", __func__, target, condition);
+        return -1;
+    }
+
+    if (NULL == reslut)
+    {
+        return -1;
+    }
+     
+    return 0;
 }
 
-#if 0
+/**
+ * @Function : Get user name on database
+ * @Description : none
+ * @Input : none
+ * @Return : 0 success  -1 failed
+ */
+int GetUserName(char *name, char *reslut)
+{
+    if (NULL == name || NULL == reslut)
+    {
+        return -1;
+    }
+
+    char target[TARGET_MAX_LEN] = {0};
+    char condition[CONDITION_MAX_LEN] = {0};
+
+    sprintf(target, "name");
+    sprintf(condition, "name = '%s'", name);
+    if (0 != InquireDatabaseData(TABLE_NAME, target, condition, reslut))
+    {
+        printf("%s: Inquire error, tartget = %s, condition = %s\n", __func__, target, condition);
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * @Function : check user name if exist on database
+ * @Description : none
+ * @Input : none
+ * @Return : 0 exist  -1 inexistence
+ */
+int CheckNameIfExist(char *name)
+{
+    char buff[20] = {0};
+
+    if (NULL == name)
+    {
+        printf("%s param name is NULL", __func__);
+        return -1;
+    }
+
+    if (0 != GetUserName(name, buff))
+    {
+        printf("%s Get user name error", __func__);
+        return -1;
+    }
+
+    if (NULL == buff)
+    {
+        return -1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+/**
+ * @Function : add user account to database
+ * @Description : none
+ * @Input : none
+ * @Return : 0 exist  -1 inexistence
+ */
+int AddUserCount(char *name, char *password)
+{
+    InsertDatabaseData(name, password);
+}
+
+
+
+#if 1
 int main(void)
 {
     char a[20];
