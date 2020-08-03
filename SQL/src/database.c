@@ -11,9 +11,9 @@ MYSQL *rsql; /* connect fd */
 
 
 
-static void InsertDatabaseData(char *name, char *password);
-static void DeleteDatabaseData(char *name);
-static void AlterDatabaseData(char *name, char *password);
+static int InsertDatabaseData(char *name, char *password);
+static int DeleteDatabaseData(char *name);
+static int AlterDatabaseData(char *name, char *password);
 static int InquireDatabaseData(char *table, char *target, char *condition, char *result);
 
 /**
@@ -35,8 +35,7 @@ void DatabaseInit(void)
         printf("mysql_real_connect error:%s!\n", mysql_error(&sql));
         exit(-1);
     }
-    printf("Connected to QQ database successful!\n");
-
+    //printf("Connected to QQ database successful!\n");
    
 }
 
@@ -75,7 +74,7 @@ static int InsertDatabaseData(char *name, char *password)
  * @Input : user name , user password
  * @Return : none
  */
-static void DeleteDatabaseData(char *name)
+static int DeleteDatabaseData(char *name)
 {
     char inser_str[100];
 
@@ -84,8 +83,10 @@ static void DeleteDatabaseData(char *name)
     if (0 != ret)
     {
         printf("%s:mysql_real_query error:%s\n", __func__, mysql_error(rsql));
-        exit(-1);
+        return -1;
     }
+
+    return 0;
 }
 
 
@@ -95,7 +96,7 @@ static void DeleteDatabaseData(char *name)
  * @Input : user name , user password
  * @Return : none
  */
-static void AlterDatabaseData(char *name, char *password)
+static int AlterDatabaseData(char *name, char *password)
 {
     char inser_str[100];
 
@@ -104,8 +105,10 @@ static void AlterDatabaseData(char *name, char *password)
     if (0 != ret)
     {
         printf("%s:mysql_real_query error:%s\n", __func__, mysql_error(rsql));
-        exit(-1);
+        return -1;
     }
+
+    return 0;
 }
 
 
@@ -113,7 +116,7 @@ static void AlterDatabaseData(char *name, char *password)
  * @Function : Inquire infomation on database
  * @Description : none
  * @Input : none
- * @Return : 0 success  -1 failed
+ * @Return : 0 success  -1 failed  1 none
  */
 static int InquireDatabaseData(char *table, char *target, char *condition, char *result)
 {
@@ -146,17 +149,18 @@ static int InquireDatabaseData(char *table, char *target, char *condition, char 
     
     /* get the number of rows */
     int rows = mysql_num_rows(res);
-    printf("The total rows is :%d\n", rows);
+    //printf("The total rows is :%d\n", rows);
 
     /*  get the number of colunms */
     int fields = mysql_num_fields(res);
-    printf("The total fields is: %d\n", fields);
+    //printf("The total fields is: %d\n", fields);
 
     if ((rows == 0) || (fields == 0))
     {
         mysql_free_result(res);
-        result = NULL;
-        return 0;
+        //printf("result is NULL");
+        //result = NULL;
+        return 1;
     }
     
     row = mysql_fetch_row(res);
@@ -241,31 +245,36 @@ int GetUserName(char *name, char *reslut)
  * @Function : check user name if exist on database
  * @Description : none
  * @Input : none
- * @Return : 0 exist  -1 inexistence
+ * @Return : 1 exist  0 inexistence  -1 failed
  */
 int CheckNameIfExist(char *name)
 {
-    char buff[20] = {0};
-
     if (NULL == name)
     {
         printf("%s param name is NULL", __func__);
         return -1;
     }
 
-    if (0 != GetUserName(name, buff))
-    {
-        printf("%s Get user name error", __func__);
-        return -1;
-    }
+    char buff[20] = {0};
+    char target[TARGET_MAX_LEN] = {0};
+    char condition[CONDITION_MAX_LEN] = {0};
 
-    if (NULL == buff)
+    sprintf(target, "name");
+    sprintf(condition, "name = '%s'", name);
+    
+    int ret = InquireDatabaseData(TABLE_NAME, target, condition, buff);
+    if (0 == ret)
     {
-        return -1;
+        return 1;
+    }
+    else if (1 == ret)
+    {
+        return 0;
     }
     else
     {
-        return 0;
+        printf("[%s] Inquire user name failed\n", __func__);
+        return -1;
     }
 }
 
@@ -275,20 +284,78 @@ int CheckNameIfExist(char *name)
  * @Input : none
  * @Return : 0 exist  -1 inexistence
  */
-int AddUserCount(char *name, char *password)
+int AddUserCount(char *newName, char *newPassword)
 {
-    InsertDatabaseData(name, password);
+    if (NULL == newName || NULL == newPassword)
+    {
+        printf("%s param NULL", __func__);
+        return -1;
+    }
+
+    if (0 != InsertDatabaseData(newName, newPassword))
+    {
+        printf("%s user count add failed\n", __func__);
+        return -1;
+    }
+    return 0;
+}
+
+
+/**
+ * @Function : delete user account on database
+ * @Description : none
+ * @Input : none
+ * @Return : 0 exist  -1 inexistence
+ */
+int DeleteUserCount(char *name)
+{
+    if (NULL == name)
+    {
+        printf("%s param NULL", __func__);
+        return -1;
+    }
+
+    if (0 != DeleteDatabaseData(name))
+    {
+        printf("%s user count add failed\n", __func__);
+        return -1;
+    }
+    return 0;
+}
+
+
+/**
+ * @Function : modify user password on database
+ * @Description : none
+ * @Input : none
+ * @Return : 0 exist  -1 inexistence
+ */
+int AlterUserPassword(char *name, char *newPassword)
+{
+    if ((NULL == name) || (NULL == newPassword))
+    {
+        printf("%s param NULL", __func__);
+        return -1;
+    }
+
+    if (0 != AlterDatabaseData(name, newPassword))
+    {
+        printf("%s user password modify failed\n", __func__);
+        return -1;
+    }
+    return 0;
 }
 
 
 
-#if 1
+#if 0
 int main(void)
 {
     char a[20];
     DatabaseInit();
     //InquireDatabaseData("test");
-    GetUserPassword("tst", a);
+    printf("%d\n", CheckNameIfExist("test"));
+    //AlterUserPassword("test", "245");
     DatabaseClose();
 }
 #else

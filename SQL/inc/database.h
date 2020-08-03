@@ -14,5 +14,8 @@ extern void DatabaseClose();
 extern int GetUserPassword(char *name, char *password);
 extern int GetUserName(char *name, char *reslut);
 extern int CheckNameIfExist(char *name);
+extern int AddUserCount(char *newName, char *newPassword);
+extern int DeleteUserCount(char *name);
+extern int AlterUserPassword(char *name, char *newPassword);
 
 #endif
