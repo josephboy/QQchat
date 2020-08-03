@@ -1,7 +1,8 @@
 #include "login.h"
 #include "database.h"
 
-
+static void Interface(void);
+static void Register(void);
 
 /**
  * @Function : QQ Chat Room main page
@@ -9,24 +10,35 @@
  * @Input : none
  * @Return : none
  */
-void interface(void)
+static void Interface(void)
 {
     int mode = 0;
-    printf("Welcome to QQ chat room !\n");
-    printf("Please select function:\n");
-    printf("1、login\t 2、register\t 3、exit\n");
-    scanf("%d", &mode);
-    switch (mode)
+    int ret = 1;
+
+    printf("\n");
+    printf("\t\t*******************************************\n");
+    printf("\t\t****     Welcome to QQ chat room !     ****\n");
+    printf("\t\t*******************************************\n");
+    printf("\n");
+    do
     {
-    case 1: /* login */
-        Login();
-        break;
-    case 2: /* register */
-        Register();
-        break;
-    default: /* exit */
-        break;
-    }
+        printf("\t\t\tPlease select function:\n");
+        printf("\t\t1、login\t 2、register\t 3、exit\n");
+        scanf("%d", &mode);
+        switch (mode)
+        {
+            case 1: /* login */
+                Login();
+                break;
+            case 2: /* register */
+                Register();
+                break;
+            default: /* exit */
+                ret = 0;
+                break;
+        }
+    }while (ret);
+
 }
 
 /**
@@ -35,7 +47,7 @@ void interface(void)
  * @Input : none
  * @Return : none
  */
-void Register(void)
+static void Register(void)
 {
     char name[NAME_MAX_LEN] = {0};
     char password[PASSWORD_MAX_LEN] = {0};
@@ -65,8 +77,9 @@ void Register(void)
         scanf("%s", password_buf);
         if (strcmp(password, password_buf) != 0)
         {
-            if (count++ > MAX_TIMES)
+            if (++count > MAX_TIMES)
             {
+                printf("Excessive number of errors\n");
                 return;
             }
             printf("The passwords are different\n");
@@ -78,7 +91,12 @@ void Register(void)
         }
     } while (1);
     
-    
+    if (0 != AddUserCount(name, password))
+    {
+        printf("[%s] Register failed \n", __func__);
+    }
+
+    printf("%s user register successfully!\n", name);
     
 }   
 
@@ -126,6 +144,6 @@ void Login(void)
 int main(void)
 {
     DatabaseInit();
-    login();
+    Interface();
     return 0;
 }
