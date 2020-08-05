@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -lmysqlclient -Wall -g
+CFLAGS += -lmysqlclient -Wall -g
 INC = -I/usr/include/mysql/ 
 DEBUG = 
 
@@ -12,6 +12,6 @@ login.o : src/login.c	inc/login.h
 database.o : ../SQL/src/database.c ../SQL/inc/database.h
 	$(CC) -c ../SQL/src/database.c -o database.o $(INC) $(CFLAGS) -I ../SQL/inc/
 
-clean : 
+.PHONY clean : 
 	rm -rf *.o login
 

@@ -10,6 +10,8 @@ database.o : src/database.c	inc/database.h
 	$(CC) -c src/database.c -o database.o $(INC) $(CFLAGS) -I inc/
 
 
+
+
 clean : 
 	rm -rf *.o database
 

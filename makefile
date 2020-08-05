@@ -13,7 +13,7 @@ target = server client
 ifndef DEBUG
 
 
-all : $(target)
+.PHONY all : $(target)
 
 server : server.o
 	$(CC)  $(OUT)/server.o -o server -lpthread
@@ -25,8 +25,10 @@ client : client.o
 client.o : $(SRC)/client.c $(INC)/client.h
 	$(CC) -c $(SRC)/client.c -o $(OUT)/client.o -I $(INC) -lpthread
 
+.PHONY login :
+	make -C login/
 
-clean : 
+.PHONY clean : 
 	rm -rf $(OUT)/*.o server client a.out
 
 else
@@ -36,6 +38,6 @@ test : test.o
 test.o : ${SRC}/test.c
 	$(CC) -c $(SRC)/test.c  -o test.o
 
-clean : 
+.PHONY clean : 
 	rm -rf *.o test a.out
 endif
