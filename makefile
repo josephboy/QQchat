@@ -4,32 +4,34 @@
 CC = gcc
 CFLAGS = -W -Wall -pedantic
 
-SRC = ./socket/src
-INC = ./socket/inc
-OUT = ./out
+OBJ_OUT = ./out
+EXE_OUT = ./exe
 DEBUG =
-target = server client
+
+target = QQ
 
 ifndef DEBUG
 
+.PHONY : ${target}
+${target} :
+	$(CC) $(OBJ_OUT)/*.o  ${CFLAGS} -o ${target}
 
-.PHONY all : $(target)
+.PHONY : socket
+socket :
+	make -C socket/
 
-server : server.o
-	$(CC)  $(OUT)/server.o -o server -lpthread
-server.o : $(SRC)/server.c $(INC)/server.h
-	$(CC) -c $(SRC)/server.c -o $(OUT)/server.o -I $(INC) -lpthread
-
-client : client.o
-	$(CC)  $(OUT)/client.o -o client  -lpthread
-client.o : $(SRC)/client.c $(INC)/client.h
-	$(CC) -c $(SRC)/client.c -o $(OUT)/client.o -I $(INC) -lpthread
-
-.PHONY login :
+.PHONY : login
+login :
 	make -C login/
 
-.PHONY clean : 
-	rm -rf $(OUT)/*.o server client a.out
+.PHONY : sql
+sql :
+	make -C SQL/
+
+
+.PHONY : clean
+clean : 
+	rm -rf $(OBJ_OUT)/*.o server client a.out
 
 else
 
