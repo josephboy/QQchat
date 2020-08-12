@@ -2,19 +2,26 @@
 .PHONY : all
 
 CC = gcc
-CFLAGS = -W -Wall -pedantic
+CFLAGS = -W -Wall -pedantic -lmysqlclient -lpthread
 
 OBJ_OUT = ./out
 EXE_OUT = ./exe
 DEBUG =
 
-target = QQ
+OBJ_SERVER = server.o
 
+OBJ_CLIENT = client.o 
+target = client server
 ifndef DEBUG
 
-.PHONY : ${target}
-${target} :
-	$(CC) $(OBJ_OUT)/*.o  ${CFLAGS} -o ${target}
+.PHONY : QQ
+QQ : ${target}
+
+server : 
+	gcc out/server.o -o server $(CFLAGS)
+
+client :
+	gcc out/client.o out/login.o out/database.o -o client $(CFLAGS)
 
 .PHONY : socket
 socket :

@@ -10,6 +10,6 @@
 #define MAX_TIMES 3
 
 
-extern void Login(void);
+extern int Interface(void);
 
 #endif

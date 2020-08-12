@@ -1,5 +1,7 @@
 #include "client.h"
 #include "pthread.h" 
+#include "login.h"
+
 
 #define SERVER_IP "127.0.0.1"
 #define PORT 8080
@@ -79,6 +81,13 @@ void *ClientGetMsg(void *clifd)
 
 int main(void)
 {
+    DatabaseInit();
+    if (0 != Interface())
+    {
+        printf("%s QQ Chat Interface failed", __func__);
+        exit(-1);
+    }
+
     pthread_t p_recv;
     pthread_t p_send;
 

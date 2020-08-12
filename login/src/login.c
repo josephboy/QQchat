@@ -1,8 +1,9 @@
 #include "login.h"
 #include "database.h"
 
-static void Interface(void);
+
 static void Register(void);
+static int Login(void);
 
 /**
  * @Function : QQ Chat Room main page
@@ -10,7 +11,7 @@ static void Register(void);
  * @Input : none
  * @Return : none
  */
-static void Interface(void)
+int Interface(void)
 {
     int mode = 0;
     int ret = 1;
@@ -28,10 +29,11 @@ static void Interface(void)
         switch (mode)
         {
             case 1: /* login */
-                Login();
+                ret = Login();
                 break;
             case 2: /* register */
                 Register();
+                ret = Login();
                 break;
             default: /* exit */
                 ret = 0;
@@ -108,11 +110,12 @@ static void Register(void)
  * @Input : none
  * @Return : none
  */
-void Login(void)
+static int Login(void)
 {
     char name[NAME_MAX_LEN] = {0};
     char password[PASSWORD_MAX_LEN] = {0};
     char pw[PASSWORD_MAX_LEN] = {0};
+    int ret = -1;
 
     printf("Login Interface\n");
     printf("Please input your name:");
@@ -126,24 +129,29 @@ void Login(void)
         if (strcmp(password, pw) == 0)
         {
             printf("Login Successfully!\n");
+            ret = 0;
         }
         else
         {
             printf("Login Failed! Please check your password\n");
+            ret = -1;
         }
         
     }
     else
     {
         printf("Login Failed! Please check your name\n");
+        ret = -1;
     }
+    return ret;
     
 }
 
-
+#if 0
 int main(void)
 {
     DatabaseInit();
     Interface();
     return 0;
 }
+#endif

@@ -2,10 +2,12 @@ CC = gcc
 CFLAGS += -lmysqlclient -Wall -g
 INC = -I/usr/include/mysql/ 
 DEBUG = 
+OBJ_OUT += ../out
 
 ifndef DEBUG
 login.o : src/login.c	inc/login.h
-	$(CC) -c src/login.c -o login.o $(INC) $(CFLAGS) -I inc/ -I ../SQL/inc/
+	echo $(OBJ_OUT)
+	$(CC) -c src/login.c -o $(OBJ_OUT)/login.o $(INC) $(CFLAGS) -I inc/ -I ../SQL/inc/
 
 else
 login : login.o database.o
