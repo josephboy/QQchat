@@ -20,7 +20,7 @@ QQ : ${target}
 server : 
 	gcc out/server.o -o server $(CFLAGS)
 
-client :
+client :socket  login sql
 	gcc out/client.o out/login.o out/database.o -o client $(CFLAGS)
 
 .PHONY : socket
